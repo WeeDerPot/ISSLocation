@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISS</title>
+    <style>
+        #ISSid { height: 180px; }
+        
+    </style>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+    crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+    crossorigin=""></script>
+    <title>ISS</title>
+</head>
+<body>
+    <div>
+        <h2>ISS Position</h2>
+        <p>Latitude: <span id="lat"></span></p>
+        <p>Longitude: <span id="long"></span></p>
+    </div>
+    <div id="ISSid">
+
+    </div>
+    <script>
+        const mymap = L.map('ISSid').setView([51.505, -0.09], 13);
+        var ISSIcon = L.icon({
+            iconUrl: 'iss200.png',
+            iconSize: [50, 32],
+            iconAnchor: [25, 16],
+        });
+        const marker = L.marker([0, 0]).addTo(mymap);
+
+        const attribute = '&copy; <a href= "https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors">';
+        const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+        const tiles = L.tileLayer(tileUrl, {attribute});
+        tiles.addTo(mymap);
+        const api_url = 'https://api.wheretheiss.at/v1/satellites/25544';
+        async function getISS() {
+            const response = await fetch(api_url);
+            const data = await response.json();
+            const { latitude, longitude } = data;
+            
+            //L.marker([latitude, longitude]).addTo(mymap);
+            marker.setLatLng([latitude, longitude]);
+            mymap.setView([latitude, longitude], 8);
+            document.getElementById('long').innerHTML = longitude;
+            document.getElementById('lat').innerHTML = latitude;
+
+            //const tid = setInterval(getISS, 50)
+        }
+        getISS();
+    </script>
+</body>
+</html>
